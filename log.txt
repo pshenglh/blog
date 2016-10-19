@@ -10,3 +10,6 @@ Flask Web开发的书已经看了一个月了，其中的代码也大致过了一遍，过程中也补了一点Htt
 暂时就想到这么多吧
 
 搭建虚拟环境，安装模块，包括venv, Flask, flask-script, flask-bootstrap
+下了个pycharm学习用其开发
+
+大致学习了pycharm和bootstrap，用这两个工具搭建了一个基本的框架
