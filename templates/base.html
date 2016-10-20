@@ -22,7 +22,11 @@
         </div>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
+            {% if not admin %}
             <li><a href={{ url_for('.login') }}><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+            {% else %}
+            <li><a href={{ url_for('.logout') }}><span class="glyphicon glyphicon-log-in"></span> 退出</a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>
