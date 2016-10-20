@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+    <head>
+        <title>From flask to Flasy</title>
+         <link rel="shortcut icon" href="{{ url_for('static', filename = 'images.png') }}"
+            type="image/x-icon">
+        <link rel="icon" href="{{ url_for('static', filename='images.png') }}"
+            type="image/x-icon">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+
+<div class="page-header">
+  <h1>我的博客</h1>
+</div>
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
+            <li><a href={{ url_for('.login') }}><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+        </ul>
+    </div>
+</nav>
+<body>
+    {% block body %}{% endblock %}
+</body>
+</html>
