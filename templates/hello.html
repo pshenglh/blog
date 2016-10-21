@@ -1,31 +1,16 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <div class="container">
-        <body>
-        <form method="post">
-            {{ form.hidden_tag() }}
-            {{ form.title(class='form-control',placeholder='Enter Title',type='text') }}<br>
-            {{ form.body(class="ckeditor") }}<br>
-            {{ form.submit(class="btn btn-default") }}
-        </form>
-        </body>
-
-	    <div class="row clearfix">
+    <div class="row clearfix">
 		    <div class="col-md-8 column">
+                {% for post in posts %}
                 <div class="jumbotron">
-                        <h1>
-                            {{ title }}
-                        </h1>
-                        {{ body | safe }}
-                        <p>
-                            {% if admin %}管理员{% endif %}
-                        </p>
+                        {{ post | safe }}
                         <p>
                              <a class="btn btn-primary btn-large" href="#">查看更多</a>
                         </p>
-
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
