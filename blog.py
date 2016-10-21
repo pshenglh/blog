@@ -39,16 +39,8 @@ manager.add_command('db', MigrateCommand)
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    form = PostForm()
-    if form.validate_on_submit():
-        print 1
-        title = form.title.data
-        body = form.body.data
-        print title, body
-        return render_template('hello.html', form=form, title=title, body=body)
-    form.title.data = '1'
-    form.body.data = '1'
-    return render_template('hello.html', form=form)
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('hello.html', posts=posts)
 
 class PostForm(Form,CKEditor):
     title = StringField('Enter Title',validators=[Required()])
@@ -56,16 +48,16 @@ class PostForm(Form,CKEditor):
     submit = SubmitField('提交')
 
 @app.route('/post',methods=['GET','POST'])
-def edit_post():
+def post():
     form = PostForm()
     if form.validate_on_submit():
-        title = form.title.data
-        body = form.body.data
-        print title, body
-        return render_template('hello.html')
-    form.title.data = '1'
-    form.body.data = '1'
-    return render_template('hello.html',form=form)
+        print 1
+        post = Post(body=form.body.data)
+        db.session.add(post)
+        return redirect(url_for('index'))
+    form.title.data = ''
+    form.body.data = ''
+    return render_template('post.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
