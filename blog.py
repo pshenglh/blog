@@ -48,19 +48,16 @@ class PostForm(Form,CKEditor):
     submit = SubmitField('提交')
 
 @app.route('/post',methods=['GET','POST'])
-def edit_post():
+def post():
     form = PostForm()
     if form.validate_on_submit():
         print 1
-        # title = form.title.data
-        # body = form.body.data
-        # post = Post(body=body)
-        # db.session.add(post)
-        # print title, body
-        return redirect(url_for('.index'))
+        post = Post(body=form.body.data)
+        db.session.add(post)
+        return redirect(url_for('index'))
     form.title.data = ''
     form.body.data = ''
-    return render_template('post.html',form=form)
+    return render_template('post.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
