@@ -37,6 +37,28 @@ def make_shell_context():
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm ()
+    if form.validate_on_submit():
+        user = Admin.query.filter_by(id=1).first()
+        if user.username == form.email.data and \
+                user.password_hash == form.password.data:
+            admin = True
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form)
+
+@app.route('/post/<int:id>')
+def post(id):
+    post = Post.query.get_or_404(id)
+    return render_template('view_post.html', post=post)
+
+@app.route('/delete/<int:id>', methods=['GET', 'POST'])
+def delete_post(id):
+    post = Post.query.get_or_404(id)
+    db.session.delete(post)
+    return redirect(url_for('index'))
+
 @app.route('/', methods=['GET','POST'])
 def index():
     posts = Post.query.order_by(Post.timestamp.desc()).all()
@@ -47,8 +69,8 @@ class PostForm(Form,CKEditor):
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 
-@app.route('/post',methods=['GET','POST'])
-def post():
+@app.route('/edit_post',methods=['GET','POST'])
+def edit_post():
     form = PostForm()
     if form.validate_on_submit():
         print 1
@@ -59,23 +81,10 @@ def post():
     form.body.data = ''
     return render_template('post.html', form=form)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm ()
-    if form.validate_on_submit():
-        user = Admin.query.filter_by(id=1).first()
-        if user.username == form.email.data and \
-                user.password_hash == form.password.data:
-            admin = True
-        return render_template('hello.html', admin=admin)
-    return render_template('login.html', form=form)
-
 @app.route('/logout')
 def logout():
     admin = False
-    return redirect(url_for('index'))
-
-@app.route('/post', methods=['GET', 'POST'])
+    return redirect(url_for('index',))
 
 class LoginForm(Form):
     email = StringField('邮箱', validators=[Required(), Length(1, 64)])
