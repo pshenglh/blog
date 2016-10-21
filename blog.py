@@ -1,16 +1,18 @@
 #  -*- coding: utf8 -*-
 import sys
 from flask import Flask, render_template, redirect, url_for
-from flask_bootstrap import  Bootstrap
+from flask_bootstrap import Bootstrap
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import Required, Length
 from flask_sqlalchemy import SQLAlchemy
 import os
 from datetime import datetime
 from flask_script import Manager, Shell
+from flask_migrate import Migrate, MigrateCommand
+from flaskckeditor import CKEditor
 
-#处理中文编码的问题
+# 处理中文编码的问题
 default_encoding = 'utf-8'
 if sys.getdefaultencoding() != default_encoding:
     reload(sys)
@@ -18,8 +20,10 @@ if sys.getdefaultencoding() != default_encoding:
     sys.setdefaultencoding(default_encoding)
 
 app = Flask(__name__)
+db = SQLAlchemy(app)
 manager = Manager(app)
 bootstrap = Bootstrap(app)
+migrate = Migrate(app, db)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app.config['SECRET_KEY'] = 'anxious'
@@ -27,20 +31,45 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
-db = SQLAlchemy(app)
-
 def make_shell_context():
-    return dict(app=app, db=db, Admin=Admin, Post=Post, \
+    return dict(app=app, db=db, Admin=Admin, Post=Post,
                 Comment=Comment)
 manager.add_command("shell", Shell(make_context=make_shell_context))
+manager.add_command('db', MigrateCommand)
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    return render_template('hello.html')
+    form = PostForm()
+    if form.validate_on_submit():
+        print 1
+        title = form.title.data
+        body = form.body.data
+        print title, body
+        return render_template('hello.html', form=form, title=title, body=body)
+    form.title.data = '1'
+    form.body.data = '1'
+    return render_template('hello.html', form=form)
+
+class PostForm(Form,CKEditor):
+    title = StringField('Enter Title',validators=[Required()])
+    body = TextAreaField("What's on your mind?",validators=[Required()])
+    submit = SubmitField('提交')
+
+@app.route('/post',methods=['GET','POST'])
+def edit_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        body = form.body.data
+        print title, body
+        return render_template('hello.html')
+    form.title.data = '1'
+    form.body.data = '1'
+    return render_template('hello.html',form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
+    form = LoginForm ()
     if form.validate_on_submit():
         user = Admin.query.filter_by(id=1).first()
         if user.username == form.email.data and \
@@ -53,6 +82,8 @@ def login():
 def logout():
     admin = False
     return redirect(url_for('index'))
+
+@app.route('/post', methods=['GET', 'POST'])
 
 class LoginForm(Form):
     email = StringField('邮箱', validators=[Required(), Length(1, 64)])
