@@ -15,6 +15,7 @@
                         </p>
                         <p>
                              <a class="btn btn-primary btn-large" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
+                             <a class="btn btn-primary btn-large" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
                         </p>
                 </div>
                 {% endfor %}

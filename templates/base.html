@@ -22,7 +22,7 @@
             <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href={{ url_for('.edit_post') }}><span class="glyphicon glyphicon-user"></span> 写博客</a></li>
+            <li><a href={{ url_for('.write_post') }}><span class="glyphicon glyphicon-user"></span> 写博客</a></li>
             <li><a href="#"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
             {% if not admin %}
             <li><a href={{ url_for('.login') }}><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>

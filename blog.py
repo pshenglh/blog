@@ -50,6 +50,7 @@ def login():
 
 @app.route('/post/<int:id>')
 def post(id):
+    print id
     post = Post.query.get_or_404(id)
     return render_template('view_post.html', post=post)
 
@@ -69,16 +70,28 @@ class PostForm(Form,CKEditor):
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 
-@app.route('/edit_post',methods=['GET','POST'])
-def edit_post():
+@app.route('/write_post', methods=['GET', 'Post'])
+def write_post():
     form = PostForm()
     if form.validate_on_submit():
-        print 1
         post = Post(body=form.body.data)
         db.session.add(post)
         return redirect(url_for('index'))
     form.title.data = ''
     form.body.data = ''
+    return render_template('post.html', form=form)
+
+@app.route('/edit_post/<int:id>',methods=['GET','POST'])
+def edit_post(id):
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post.query.filter_by(id=id).first()
+        post.body = form.body.data
+        db.session.add(post)
+        return redirect(url_for('index'))
+    post = Post.query.filter_by(id=id).first()
+    form.title.data = id
+    form.body.data = post.body
     return render_template('post.html', form=form)
 
 @app.route('/logout')
