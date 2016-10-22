@@ -48,11 +48,16 @@ def login():
         return redirect(url_for('index'))
     return render_template('login.html', form=form)
 
-@app.route('/post/<int:id>')
+@app.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
-    print id
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.comment.data, post_id=id)
+        db.session.add(comment)
+        return redirect(url_for('post', id=id))
     post = Post.query.get_or_404(id)
-    return render_template('view_post.html', post=post)
+    comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
+    return render_template('view_post.html', post=post, form=form, comments=comments)
 
 @app.route('/delete/<int:id>', methods=['GET', 'POST'])
 def delete_post(id):
@@ -60,15 +65,17 @@ def delete_post(id):
     db.session.delete(post)
     return redirect(url_for('index'))
 
+@app.route('/delete_comment/<int:id>', methods=['GET', 'POST'])
+def delete_comment(id):
+    comment = Comment.query.get_or_404(id)
+    post_id = comment.post_id
+    db.session.delete(comment)
+    return redirect(url_for('post', id=post_id))
+
 @app.route('/', methods=['GET','POST'])
 def index():
     posts = Post.query.order_by(Post.timestamp.desc()).all()
     return render_template('hello.html', posts=posts)
-
-class PostForm(Form,CKEditor):
-    title = StringField('Enter Title',validators=[Required()])
-    body = TextAreaField("What's on your mind?",validators=[Required()])
-    submit = SubmitField('提交')
 
 @app.route('/write_post', methods=['GET', 'Post'])
 def write_post():
@@ -99,10 +106,20 @@ def logout():
     admin = False
     return redirect(url_for('index',))
 
+class PostForm(Form,CKEditor):
+    title = StringField('Enter Title',validators=[Required()])
+    body = TextAreaField("What's on your mind?",validators=[Required()])
+    submit = SubmitField('提交')
+
 class LoginForm(Form):
     email = StringField('邮箱', validators=[Required(), Length(1, 64)])
     password = PasswordField('密码', validators=[Required()])
     submit = SubmitField('登录')
+
+class CommentForm(Form):
+    connect = StringField('联系方式')
+    comment = TextAreaField('评论', validators=[Required()])
+    submit = SubmitField('提交')
 
 class Admin(db.Model):
     __tablename__ = 'admin'
