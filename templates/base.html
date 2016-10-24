@@ -1,28 +1,51 @@
 <!DOCTYPE html>
     <head>
         <title>From flask to Flasy</title>
-         <link rel="shortcut icon" href="{{ url_for('static', filename = 'images.png') }}"
-            type="image/x-icon">
-        <link rel="icon" href="{{ url_for('static', filename='images.png') }}"
-            type="image/x-icon">
+         <link rel="shortcut icon" href="{{ url_for('static', filename = 'images.png') }}" type="image/x-icon">
+        <link rel="icon" href="{{ url_for('static', filename='images.png') }}" type="image/x-icon">
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-        <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="{{ url_for('static', filename='css/bootstrap.css') }}"></script>
         <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+
+        <style>
+            .post_head h3{
+                padding: 8px;
+                margin-bottom: 30px;
+                margin-bottom: 15px;
+                font-size: 21px;
+                font-weight: 600;
+            }
+            .btn{
+                position:relative;
+                right:-70%;
+                border-radius: 0px
+            }
+            .bt{
+                margin: 30px;
+            }
+            .container {
+                padding-right: 90px;
+                padding-left: 90px;
+                margin-right: auto;
+                margin-left: auto;
+            }
+        </style>
     </head>
 
 <div class="page-header">
-  <h1>我的博客</h1>
+  <h1 align="center">我的博客</h1>
 </div>
 
 <nav class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
+    <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href={{ url_for('.write_post') }}><span class="glyphicon glyphicon-user"></span> 写博客</a></li>
+            <li><a href={{ url_for('.write_post') }}><span class="glyphicon glyphicon-plus"></span> 写博客</a></li>
             <li><a href="#"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
             {% if not admin %}
             <li><a href={{ url_for('.login') }}><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
@@ -34,5 +57,9 @@
 </nav>
 <body>
     {% block body %}{% endblock %}
+    <hr>
+    <div class="bt" align="center">
+        powered by wasted time
+    </div>
 </body>
 </html>

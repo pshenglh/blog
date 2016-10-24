@@ -1,24 +1,31 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <div class="container">
-        <div class="row clearfix">
-		    <div class="col-md-8 column">
+    <div class="container" id="sumery-container">
+        <div class="row">
+		    <div class="col-md-8">
                 {% for post in posts %}
-                <div class="jumbotron">
-                        <h1>
-                            {{ title }}{{ admin }}
-                        </h1>
-                        {{ post.body | safe }}
-                        <p>
-                            {% if admin %}管理员{% endif %}
-                        </p>
-                        <p>
-                             <a class="btn btn-primary btn-large" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
-                             <a class="btn btn-primary btn-large" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
-                        </p>
+                <hr>
+                <div class="post_head"><h3>{{ post.title | safe }}</h3></div>
+                <div class="media" margin="30px">
+                  <a class="media-left" href="#">
+                    <img src="{{ url_for('static', filename='test.jpg') }}" width="150" height="150" alt="...">
+                  </a>
+                  <div class="media-body">
+                    {{ post.body | safe }}
+                      <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
+                      <a class="btn btn-primary" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
+                  </div>
                 </div>
                 {% endfor %}
+                <hr>
+                <div>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="jumbotron">
+            </div>
             </div>
         </div>
     </div>

@@ -81,7 +81,7 @@ def index():
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.body.data)
+        post = Post(body=form.body.data, title=form.title.data)
         db.session.add(post)
         return redirect(url_for('index'))
     form.title.data = ''
@@ -94,10 +94,11 @@ def edit_post(id):
     if form.validate_on_submit():
         post = Post.query.filter_by(id=id).first()
         post.body = form.body.data
+        post.title = form.title.data
         db.session.add(post)
         return redirect(url_for('index'))
     post = Post.query.filter_by(id=id).first()
-    form.title.data = id
+    form.title.data = post.title
     form.body.data = post.body
     return render_template('post.html', form=form)
 
@@ -130,6 +131,7 @@ class Admin(db.Model):
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Text)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     comments = db.relationship('Comment', backref='role')
