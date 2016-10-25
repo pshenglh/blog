@@ -81,7 +81,7 @@ def index():
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.body.data, title=form.title.data)
+        post = Post(body=form.body.data, title=form.title.data, abstract=form.abstract.data)
         db.session.add(post)
         return redirect(url_for('index'))
     form.title.data = ''
@@ -95,6 +95,7 @@ def edit_post(id):
         post = Post.query.filter_by(id=id).first()
         post.body = form.body.data
         post.title = form.title.data
+        post.abstract = form.abstract.data
         db.session.add(post)
         return redirect(url_for('index'))
     post = Post.query.filter_by(id=id).first()
@@ -108,7 +109,8 @@ def logout():
     return redirect(url_for('index',))
 
 class PostForm(Form,CKEditor):
-    title = StringField('Enter Title',validators=[Required()])
+    title = StringField('标题',validators=[Required()])
+    abstract = StringField('摘要', validators=[Required()])
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 
@@ -133,6 +135,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text)
     body = db.Column(db.Text)
+    abstract = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     comments = db.relationship('Comment', backref='role')
 

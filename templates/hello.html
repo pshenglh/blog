@@ -2,17 +2,18 @@
 
 {% block body %}
     <div class="container" id="sumery-container">
+
         <div class="row">
 		    <div class="col-md-8">
                 {% for post in posts %}
                 <hr>
                 <div class="post_head"><h3>{{ post.title | safe }}</h3></div>
                 <div class="media" margin="30px">
-                  <a class="media-left" href="#">
+                  <a class="media-left" >
                     <img src="{{ url_for('static', filename='test.jpg') }}" width="150" height="150" alt="...">
                   </a>
                   <div class="media-body">
-                    {{ post.body | safe }}
+                    {{ post.abstract }}<br>
                       <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
                       <a class="btn btn-primary" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
                   </div>
