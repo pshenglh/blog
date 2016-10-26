@@ -90,7 +90,22 @@ def index():
     posts = Post.query.order_by(Post.timestamp.desc()).all()
     return render_template('hello.html', posts=posts)
 
-@app.route('/write_post', methods=['GET', 'Post'])
+@app.route('/code')
+def code():
+    posts = Post.query.filter_by(tag='code').order_by(Post.timestamp.desc()).all()
+    return render_template('hello.html', posts=posts)
+
+@app.route('/database')
+def database():
+    posts = Post.query.filter_by(tag='database').order_by(Post.timestamp.desc()).all()
+    return render_template('hello.html', posts=posts)
+
+@app.route('/essay')
+def essay():
+    posts = Post.query.filter_by(tag='essay').order_by(Post.timestamp.desc()).all()
+    return render_template('hello.html', posts=posts)
+
+@app.route('/write_post', methods=['GET', 'POST'])
 @login_required
 def write_post():
     form = PostForm()
@@ -108,14 +123,17 @@ def write_post():
 def edit_post(id):
     form = PostForm()
     if form.validate_on_submit():
+        print 1
         post = Post.query.filter_by(id=id).first()
         post.body = form.body.data
         post.title = form.title.data
         post.abstract = form.abstract.data
+        post.tag = form.tag.data
         db.session.add(post)
         return redirect(url_for('index'))
     post = Post.query.filter_by(id=id).first()
     form.title.data = post.title
+    form.tag.data = post.tag
     form.body.data = post.body
     form.abstract.data = post.abstract
     return render_template('post.html', form=form)
@@ -128,8 +146,8 @@ def logout():
 
 class PostForm(Form,CKEditor):
     title = StringField('标题',validators=[Required()])
-    abstract = TextAreaField('摘要', validators=[Required()])
-    tag = SelectField('标签', choices=[('code', '编程'), ('db', '数据库'),('log', '随笔')], validators=[Required()])
+    abstract = TextAreaField('摘要',validators=[Required()])
+    tag = SelectField('标签', choices=[('code', '编程'), ('database', '数据库'),('essay', '随笔')], validators=[Required()])
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 

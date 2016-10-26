@@ -61,6 +61,9 @@
     <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
+            <a class="navbar-brand" href="{{ url_for('.code') }}">编程</a>
+            <a class="navbar-brand" href="{{ url_for('.database') }}">数据库</a>
+            <a class="navbar-brand" href="{{ url_for('.essay') }}">随笔</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
             {% if current_user.is_authenticated %}
