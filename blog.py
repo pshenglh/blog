@@ -12,6 +12,8 @@ from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from flaskckeditor import CKEditor
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
+from flask_moment import Moment
+import time
 
 # 处理中文编码的问题
 default_encoding = 'utf-8'
@@ -31,6 +33,7 @@ bootstrap = Bootstrap(app)
 migrate = Migrate(app, db)
 basedir = os.path.abspath(os.path.dirname(__file__))
 login_manager.init_app(app)
+moment = Moment(app)
 
 
 app.config['SECRET_KEY'] = 'anxious'
@@ -88,7 +91,11 @@ def delete_comment(id):
 @app.route('/', methods=['GET','POST'])
 def index():
     posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('hello.html', posts=posts)
+    if len(posts) < 10:
+        new_posts = posts
+    else:
+        new_posts = posts[0:9]
+    return render_template('hello.html', posts=posts, new_posts=new_posts)
 
 @app.route('/code')
 def code():
@@ -110,12 +117,15 @@ def essay():
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.body.data, title=form.title.data, abstract=form.abstract.data)
+        post = Post(body=form.body.data, title=form.title.data, abstract=form.abstract.data,
+                    tag=form.tag.data)
+        print post.timestamp
         db.session.add(post)
         return redirect(url_for('index'))
-    form.title.data = ''
-    form.abstract.data = ''
-    form.body.data = ''
+    form.title.data = ' '
+    form.abstract.data = ' '
+    form.tag.data = 'code'
+    form.body.data = ' '
     return render_template('post.html', form=form)
 
 @app.route('/edit_post/<int:id>',methods=['GET','POST'])
@@ -136,6 +146,7 @@ def edit_post(id):
     form.tag.data = post.tag
     form.body.data = post.body
     form.abstract.data = post.abstract
+    print post.timestamp
     return render_template('post.html', form=form)
 
 @app.route('/logout')
