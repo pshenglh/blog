@@ -99,6 +99,7 @@ def write_post():
         db.session.add(post)
         return redirect(url_for('index'))
     form.title.data = ''
+    form.abstract.data = ''
     form.body.data = ''
     return render_template('post.html', form=form)
 
@@ -128,7 +129,7 @@ def logout():
 class PostForm(Form,CKEditor):
     title = StringField('标题',validators=[Required()])
     abstract = TextAreaField('摘要', validators=[Required()])
-    tag = SelectField('标签', choices=[('1', '1'), ('2', '2')])
+    tag = SelectField('标签', choices=[('code', '编程'), ('db', '数据库'),('log', '随笔')], validators=[Required()])
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 
