@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+
+
 {% block body %}
     <div class="container" id="sumery-container">
 
@@ -14,7 +16,9 @@
                   </a>
                   <div class="media-body">
                     {{ post.abstract }}<br>
+                      {% if current_user.is_authenticated %}
                       <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
+                      {% endif %}
                       <a class="btn btn-primary" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
                   </div>
                 </div>
@@ -25,7 +29,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="jumbotron">
+                <div class="right-index">
             </div>
             </div>
         </div>

@@ -21,9 +21,7 @@
             .btn{
                 border-radius: 0px
             }
-            .bt{
-                margin: 30px;
-            }
+
             .container {
                 padding-right: 90px;
                 padding-left: 90px;
@@ -37,7 +35,7 @@
                 padding-bottom: 170px;
                 margin-top: 0px;
                 background-image: url(static/test1.png);
-                background-size: 1350px 180px;
+                background-size: 1370px 180px;
             }
             .tou h1{
                 position: absolute;
@@ -49,10 +47,11 @@
             }
         </style>
     </head>
-
+{% block head %}
 <div class="tou">
   <h1 align="center">我的博客</h1>
 </div>
+{% endblock %}
 
 <nav class="navbar navbar-default" role="navigation">
     <div class="container">
@@ -60,21 +59,20 @@
             <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
+            {% if current_user.is_authenticated %}
             <li><a href={{ url_for('.write_post') }}><span class="glyphicon glyphicon-plus"></span> 写博客</a></li>
+            {% endif %}
             <li><a href="#"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
-            {% if not admin %}
-            <li><a href={{ url_for('.login') }}><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
-            {% else %}
+            {% if current_user.is_authenticated %}
             <li><a href={{ url_for('.logout') }}><span class="glyphicon glyphicon-log-in"></span> 退出</a></li>
+            {% else %}
+            <li><a href={{ url_for('.login') }}><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
             {% endif %}
         </ul>
     </div>
 </nav>
 <body>
     {% block body %}{% endblock %}
-    <hr>
-    <div class="bt" align="center">
-        powered by wasted time
-    </div>
+    <hr class="divider">
 </body>
 </html>

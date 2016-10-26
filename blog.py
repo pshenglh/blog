@@ -1,9 +1,9 @@
 #  -*- coding: utf8 -*-
 import sys
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import Required, Length
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -11,6 +11,7 @@ from datetime import datetime
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from flaskckeditor import CKEditor
+from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
 
 # 处理中文编码的问题
 default_encoding = 'utf-8'
@@ -19,12 +20,18 @@ if sys.getdefaultencoding() != default_encoding:
 
     sys.setdefaultencoding(default_encoding)
 
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'login'
+
 app = Flask(__name__)
 db = SQLAlchemy(app)
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 migrate = Migrate(app, db)
 basedir = os.path.abspath(os.path.dirname(__file__))
+login_manager.init_app(app)
+
 
 app.config['SECRET_KEY'] = 'anxious'
 app.config['SQLALCHEMY_DATABASE_URI'] = \
@@ -37,6 +44,10 @@ def make_shell_context():
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
+@login_manager.user_loader
+def load_user(user_id):
+    return Admin.query.get(int(user_id))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm ()
@@ -44,8 +55,8 @@ def login():
         user = Admin.query.filter_by(id=1).first()
         if user.username == form.email.data and \
                 user.password_hash == form.password.data:
-            admin = True
-        return redirect(url_for('index'))
+            login_user(user, False)
+        return redirect(request.args.get('next') or url_for('index'))
     return render_template('login.html', form=form)
 
 @app.route('/post/<int:id>', methods=['GET', 'POST'])
@@ -60,12 +71,14 @@ def post(id):
     return render_template('view_post.html', post=post, form=form, comments=comments)
 
 @app.route('/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
     db.session.delete(post)
     return redirect(url_for('index'))
 
 @app.route('/delete_comment/<int:id>', methods=['GET', 'POST'])
+@login_required
 def delete_comment(id):
     comment = Comment.query.get_or_404(id)
     post_id = comment.post_id
@@ -78,6 +91,7 @@ def index():
     return render_template('hello.html', posts=posts)
 
 @app.route('/write_post', methods=['GET', 'Post'])
+@login_required
 def write_post():
     form = PostForm()
     if form.validate_on_submit():
@@ -89,6 +103,7 @@ def write_post():
     return render_template('post.html', form=form)
 
 @app.route('/edit_post/<int:id>',methods=['GET','POST'])
+@login_required
 def edit_post(id):
     form = PostForm()
     if form.validate_on_submit():
@@ -101,16 +116,19 @@ def edit_post(id):
     post = Post.query.filter_by(id=id).first()
     form.title.data = post.title
     form.body.data = post.body
+    form.abstract.data = post.abstract
     return render_template('post.html', form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
-    admin = False
+    logout_user()
     return redirect(url_for('index',))
 
 class PostForm(Form,CKEditor):
     title = StringField('标题',validators=[Required()])
-    abstract = StringField('摘要', validators=[Required()])
+    abstract = TextAreaField('摘要', validators=[Required()])
+    tag = SelectField('标签', choices=[('1', '1'), ('2', '2')])
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 
@@ -124,7 +142,7 @@ class CommentForm(Form):
     comment = TextAreaField('评论', validators=[Required()])
     submit = SubmitField('提交')
 
-class Admin(db.Model):
+class Admin(db.Model, UserMixin):
     __tablename__ = 'admin'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
@@ -136,6 +154,7 @@ class Post(db.Model):
     title = db.Column(db.Text)
     body = db.Column(db.Text)
     abstract = db.Column(db.Text)
+    tag = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     comments = db.relationship('Comment', backref='role')
 
