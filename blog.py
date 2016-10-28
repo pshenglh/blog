@@ -13,7 +13,8 @@ from flask_migrate import Migrate, MigrateCommand
 from flaskckeditor import CKEditor
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
 from flask_moment import Moment
-import time
+from werkzeug import secure_filename
+
 
 # 处理中文编码的问题
 default_encoding = 'utf-8'
@@ -35,11 +36,39 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 login_manager.init_app(app)
 moment = Moment(app)
 
+UPLOAD_FOLDER = 'static/pic'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['SECRET_KEY'] = 'anxious'
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# 文件上传
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file',
+                                    filename=filename))
+    return render_template('upload_file.html')
+
+@app.route('/uploaded_file/<filename>')
+def uploaded_file(filename):
+    pic_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    s = os.path.split(pic_path)
+    print os.path.split(pic_path)
+    p = '/' + s[0] + '/' + s[1]
+    print p
+    return render_template('img.html', filenam=p)
 
 def make_shell_context():
     return dict(app=app, db=db, Admin=Admin, Post=Post,
@@ -66,7 +95,7 @@ def login():
 def post(id):
     form = CommentForm()
     if form.validate_on_submit():
-        comment = Comment(body=form.comment.data, post_id=id)
+        comment = Comment(body=form.comment.data, connection=form.connect.data, post_id=id)
         db.session.add(comment)
         return redirect(url_for('post', id=id))
     post = Post.query.get_or_404(id)
@@ -100,17 +129,29 @@ def index():
 @app.route('/code')
 def code():
     posts = Post.query.filter_by(tag='code').order_by(Post.timestamp.desc()).all()
-    return render_template('hello.html', posts=posts)
+    if len(posts) < 10:
+        new_posts = posts
+    else:
+        new_posts = posts[0:9]
+    return render_template('hello.html', posts=posts, new_posts=new_posts)
 
 @app.route('/database')
 def database():
     posts = Post.query.filter_by(tag='database').order_by(Post.timestamp.desc()).all()
-    return render_template('hello.html', posts=posts)
+    if len(posts) < 10:
+        new_posts = posts
+    else:
+        new_posts = posts[0:9]
+    return render_template('hello.html', posts=posts, new_posts=new_posts)
 
 @app.route('/essay')
 def essay():
     posts = Post.query.filter_by(tag='essay').order_by(Post.timestamp.desc()).all()
-    return render_template('hello.html', posts=posts)
+    if len(posts) < 10:
+        new_posts = posts
+    else:
+        new_posts = posts[0:9]
+    return render_template('hello.html', posts=posts, new_posts=new_posts)
 
 @app.route('/write_post', methods=['GET', 'POST'])
 @login_required
@@ -133,7 +174,6 @@ def write_post():
 def edit_post(id):
     form = PostForm()
     if form.validate_on_submit():
-        print 1
         post = Post.query.filter_by(id=id).first()
         post.body = form.body.data
         post.title = form.title.data
@@ -146,7 +186,6 @@ def edit_post(id):
     form.tag.data = post.tag
     form.body.data = post.body
     form.abstract.data = post.abstract
-    print post.timestamp
     return render_template('post.html', form=form)
 
 @app.route('/logout')
@@ -194,6 +233,7 @@ class Post(db.Model):
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
+    connection = db.Column(db.Text)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))

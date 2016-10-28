@@ -16,10 +16,12 @@
                   </a>
                   <div class="media-body">
                     {{ post.abstract }}<br>
-                      {% if current_user.is_authenticated %}
-                      <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
-                      {% endif %}
-                      <a class="btn btn-primary" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
+                      <span class="right-btn">
+                          {% if current_user.is_authenticated %}
+                          <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
+                          {% endif %}
+                          <a class="btn btn-primary" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
+                      </span>
                   </div>
                 </div>
                 <div class="alert alert-success" role="alert">发布时间：{{ post.timestamp.strftime("%Y-%m-%d") }} &nbsp
