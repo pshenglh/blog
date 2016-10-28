@@ -1,11 +1,20 @@
 <!DOCTYPE html>
+{% extends "base.html" %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>查看图片</title>
 </head>
+
+{% block body %}
 <body>
-<p>{{ filenam }}</p>
-<img src= "{{ filenam }}">
+<div class="container">
+    <div class="row" align="center">
+        <p>{{ filenam }}</p>
+        <img src= "{{ filenam }}" width="400" height="300"><br><br>
+        <a class="btn btn-primary" href="{{ url_for('.upload_pic', id=id) }}" >更换</a>
+    </div>
+</div>
 </body>
+{% endblock %}
 </html>

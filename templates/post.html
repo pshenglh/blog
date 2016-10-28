@@ -10,6 +10,7 @@
 {% block body %}
     <div class="container">
         <body>
+        </form>
         <form method="post">
             {{ form.hidden_tag() }}
             {{ form.title(class='form-control',placeholder='标题',type='text') }}<br>
@@ -23,6 +24,8 @@
                 </script>
             <br>
             {{ form.submit(class="btn btn-default") }}
+            <a class="btn btn-primary" href="{{ url_for('.upload_pic', id=id) }}" >上传图片</a>
+            <a class="btn btn-primary" href="{{ url_for('.uploaded_file', id=id) }}" >主题图片</a>
         </form>
         </body>
     </div>

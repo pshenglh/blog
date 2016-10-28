@@ -44,31 +44,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # 文件上传
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return render_template('upload_file.html')
-
-@app.route('/uploaded_file/<filename>')
-def uploaded_file(filename):
-    pic_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    s = os.path.split(pic_path)
-    print os.path.split(pic_path)
-    p = '/' + s[0] + '/' + s[1]
-    print p
-    return render_template('img.html', filenam=p)
+@app.route('/uploaded_file/<id>')
+@login_required
+def uploaded_file(id):
+    post = Post.query.filter_by(id=id).first()
+    print post.head_pic
+    p =post.head_pic
+    return render_template('img.html', filenam=p, id=id)
 
 def make_shell_context():
     return dict(app=app, db=db, Admin=Admin, Post=Post,
@@ -169,11 +158,30 @@ def write_post():
     form.body.data = ' '
     return render_template('post.html', form=form)
 
+@app.route('/upload_pic/<int:id>',methods=['GET','POST'])
+@login_required
+def upload_pic(id):
+    if request.method == 'POST':
+        print 1
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            pic_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            s = os.path.split(pic_path)
+            print os.path.split(pic_path)
+            p = '/' + s[0] + '/' + s[1]
+            post = Post.query.filter_by(id=id).first()
+            post.head_pic = p
+            return redirect(url_for('uploaded_file', id=id))
+    return render_template('upload_file.html')
+
 @app.route('/edit_post/<int:id>',methods=['GET','POST'])
 @login_required
 def edit_post(id):
     form = PostForm()
     if form.validate_on_submit():
+        print 2
         post = Post.query.filter_by(id=id).first()
         post.body = form.body.data
         post.title = form.title.data
@@ -186,7 +194,7 @@ def edit_post(id):
     form.tag.data = post.tag
     form.body.data = post.body
     form.abstract.data = post.abstract
-    return render_template('post.html', form=form)
+    return render_template('post.html', form=form, id=id)
 
 @app.route('/logout')
 @login_required
@@ -220,6 +228,7 @@ class Admin(db.Model, UserMixin):
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
+    head_pic = db.Column(db.Text, default='/static/pic/test3.jpg')
     title = db.Column(db.Text)
     body = db.Column(db.Text)
     abstract = db.Column(db.Text)
