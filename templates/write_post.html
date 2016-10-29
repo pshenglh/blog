@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<{% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block head %}
@@ -11,8 +12,7 @@
     <div class="container">
         <body>
             {% include '_post.html' %}
-            <a class="btn btn-primary" href="{{ url_for('.upload_pic', id=id) }}" >上传图片</a>
-            <a class="btn btn-primary" href="{{ url_for('.uploaded_file', id=id) }}" >主题图片</a>
         </body>
     </div>
 {% endblock %}
+</html>

@@ -46,18 +46,7 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# 文件上传
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-@app.route('/uploaded_file/<id>')
-@login_required
-def uploaded_file(id):
-    post = Post.query.filter_by(id=id).first()
-    print post.head_pic
-    p =post.head_pic
-    return render_template('img.html', filenam=p, id=id)
 
 def make_shell_context():
     return dict(app=app, db=db, Admin=Admin, Post=Post,
@@ -69,6 +58,7 @@ manager.add_command('db', MigrateCommand)
 def load_user(user_id):
     return Admin.query.get(int(user_id))
 
+# 登录和登出
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm ()
@@ -80,24 +70,13 @@ def login():
         return redirect(request.args.get('next') or url_for('index'))
     return render_template('login.html', form=form)
 
-@app.route('/post/<int:id>', methods=['GET', 'POST'])
-def post(id):
-    form = CommentForm()
-    if form.validate_on_submit():
-        comment = Comment(body=form.comment.data, connection=form.connect.data, post_id=id)
-        db.session.add(comment)
-        return redirect(url_for('post', id=id))
-    post = Post.query.get_or_404(id)
-    comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
-    return render_template('view_post.html', post=post, form=form, comments=comments)
-
-@app.route('/delete/<int:id>', methods=['GET', 'POST'])
+@app.route('/logout')
 @login_required
-def delete_post(id):
-    post = Post.query.get_or_404(id)
-    db.session.delete(post)
-    return redirect(url_for('index'))
+def logout():
+    logout_user()
+    return redirect(url_for('index',))
 
+# 修改评论
 @app.route('/delete_comment/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_comment(id):
@@ -106,6 +85,7 @@ def delete_comment(id):
     db.session.delete(comment)
     return redirect(url_for('post', id=post_id))
 
+# 文章首页和分类
 @app.route('/', methods=['GET','POST'])
 def index():
     posts = Post.query.order_by(Post.timestamp.desc()).all()
@@ -142,6 +122,7 @@ def essay():
         new_posts = posts[0:9]
     return render_template('hello.html', posts=posts, new_posts=new_posts)
 
+# 编写和修改博客
 @app.route('/write_post', methods=['GET', 'POST'])
 @login_required
 def write_post():
@@ -156,25 +137,7 @@ def write_post():
     form.abstract.data = ' '
     form.tag.data = 'code'
     form.body.data = ' '
-    return render_template('post.html', form=form)
-
-@app.route('/upload_pic/<int:id>',methods=['GET','POST'])
-@login_required
-def upload_pic(id):
-    if request.method == 'POST':
-        print 1
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            pic_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            s = os.path.split(pic_path)
-            print os.path.split(pic_path)
-            p = '/' + s[0] + '/' + s[1]
-            post = Post.query.filter_by(id=id).first()
-            post.head_pic = p
-            return redirect(url_for('uploaded_file', id=id))
-    return render_template('upload_file.html')
+    return render_template('write_post.html', form=form, id=0)
 
 @app.route('/edit_post/<int:id>',methods=['GET','POST'])
 @login_required
@@ -196,11 +159,76 @@ def edit_post(id):
     form.abstract.data = post.abstract
     return render_template('post.html', form=form, id=id)
 
-@app.route('/logout')
+@app.route('/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
-def logout():
-    logout_user()
-    return redirect(url_for('index',))
+def delete_post(id):
+    post = Post.query.get_or_404(id)
+    db.session.delete(post)
+    return redirect(url_for('index'))
+
+@app.route('/post/<int:id>', methods=['GET', 'POST'])
+def post(id):
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.comment.data, connection=form.connect.data, post_id=id)
+        db.session.add(comment)
+        return redirect(url_for('post', id=id))
+    post = Post.query.get_or_404(id)
+    comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
+    return render_template('view_post.html', post=post, form=form, comments=comments)
+
+# 文件上传
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/uploaded_file/<id>')
+@login_required
+def uploaded_file(id):
+    post = Post.query.filter_by(id=id).first()
+    p =post.head_pic
+    return render_template('img.html', filenam=p, id=id)
+
+@app.route('/upload_pic/<int:id>',methods=['GET','POST'])
+@login_required
+def upload_pic(id):
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            pic_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            s = os.path.split(pic_path)
+            p = '/' + s[0] + '/' + s[1]
+            post = Post.query.filter_by(id=id).first()
+            if post.head_pic:
+                q = os.path.split(post.head_pic)
+                l = s[0] + '/' + q[1]
+                os.remove(l)
+            post.head_pic = p
+            return redirect(url_for('uploaded_file', id=id))
+    return render_template('upload_file.html')
+
+@app.route('/post_pic/<int:id>',methods=['GET','POST'])
+@login_required
+def post_pic(id):
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            post = Post.query.filter_by(id=id).first()
+            filename = secure_filename(file.filename)
+            if not os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], '0'+str(post.id))):
+                os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], '0'+str(post.id)))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], '0'+str(post.id), filename))
+            pic_path = os.path.join(app.config['UPLOAD_FOLDER'], '0'+str(post.id), filename)
+            s = os.path.split(pic_path)
+            p = '/' + s[0] + '/' + s[1]
+            if not post.body_pic:
+                post.body_pic = p
+            else:
+                post.body_pic = post.body_pic + '|' + p
+            return redirect(url_for('uploaded_file', id=id))
+    return render_template('upload_file.html')
 
 class PostForm(Form,CKEditor):
     title = StringField('标题',validators=[Required()])
@@ -229,6 +257,7 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     head_pic = db.Column(db.Text, default='/static/pic/test3.jpg')
+    body_pic = db.Column(db.Text)
     title = db.Column(db.Text)
     body = db.Column(db.Text)
     abstract = db.Column(db.Text)
