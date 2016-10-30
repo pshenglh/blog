@@ -58,7 +58,7 @@ manager.add_command('db', MigrateCommand)
 def load_user(user_id):
     return Admin.query.get(int(user_id))
 
-# 登录和登出
+# 登录
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm ()
@@ -70,6 +70,7 @@ def login():
         return redirect(request.args.get('next') or url_for('index'))
     return render_template('login.html', form=form)
 
+# 登出
 @app.route('/logout')
 @login_required
 def logout():
@@ -122,7 +123,7 @@ def essay():
         new_posts = posts[0:9]
     return render_template('hello.html', posts=posts, new_posts=new_posts)
 
-# 编写和修改博客
+# 编写博客
 @app.route('/write_post', methods=['GET', 'POST'])
 @login_required
 def write_post():
@@ -139,6 +140,7 @@ def write_post():
     form.body.data = ' '
     return render_template('write_post.html', form=form, id=0)
 
+# 修改博客
 @app.route('/edit_post/<int:id>',methods=['GET','POST'])
 @login_required
 def edit_post(id):
@@ -157,8 +159,13 @@ def edit_post(id):
     form.tag.data = post.tag
     form.body.data = post.body
     form.abstract.data = post.abstract
-    return render_template('post.html', form=form, id=id)
+    if post.body_pic:
+        p = post.body_pic.split("|")
+    else:
+        p = None
+    return render_template('post.html', form=form, id=id, filenam=p)
 
+# 删除博客
 @app.route('/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_post(id):
@@ -166,6 +173,7 @@ def delete_post(id):
     db.session.delete(post)
     return redirect(url_for('index'))
 
+# 查看博客
 @app.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     form = CommentForm()
@@ -227,8 +235,18 @@ def post_pic(id):
                 post.body_pic = p
             else:
                 post.body_pic = post.body_pic + '|' + p
-            return redirect(url_for('uploaded_file', id=id))
+            return redirect(url_for('uploaded_postpic', id=id))
     return render_template('upload_file.html')
+
+@app.route('/uploaded-postpic/<id>')
+@login_required
+def uploaded_postpic(id):
+    post = Post.query.filter_by(id=id).first()
+    if post.body_pic:
+        p = post.body_pic.split("|")
+    else:
+        p = None
+    return render_template('body_pic.html', filenam=p, id=id)
 
 class PostForm(Form,CKEditor):
     title = StringField('标题',validators=[Required()])
