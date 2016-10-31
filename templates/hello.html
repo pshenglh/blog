@@ -6,7 +6,7 @@
 
         <div class="row">
 		    <div class="col-md-8">
-                <p>文章</p>
+                <h3>文章</h3>
                 {% for post in posts %}
                 <hr>
                 <div class="post_head"><h3>{{ post.title | safe }}</h3></div>
@@ -37,16 +37,15 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <p>个人资料</p>
+                <h3>个人资料</h3>
                 <div class="right-index">
                     <hr>
-                    <img src="{{ url_for('static', filename='test.jpg') }}" width="80" height="80">
-                    <p>  </p>
+                    <img src="{{ url_for('static', filename='test.jpg') }}" width="80" height="80"><br><br>
                     <p>邮箱：psheng@outlook.com</p>
                     <p>QQ：674799317</p>
                 </div>
                 <div class="newly-post">
-                    <p>最新文章<hr></p>
+                    <h3>最新文章<hr></h3>
                     {% for new_post in new_posts %}
                     <p><a href="{{ url_for('.post', id=new_post.id) }}">{{ new_post.title }}</a></p>
                     {% endfor %}

@@ -12,8 +12,6 @@
         <div class="row">
           <div class="col-md-8">
             {% include '_post.html' %}
-            <a class="btn btn-primary" href="{{ url_for('.upload_pic', id=id) }}" >上传图片</a>
-            <a class="btn btn-primary" href="{{ url_for('.uploaded_file', id=id) }}" >主题图片</a>
           </div>
           <div class="col-md-4">
               {% include '_body_pic.html' %}

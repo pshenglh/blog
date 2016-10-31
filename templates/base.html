@@ -66,7 +66,7 @@
             .vp-head{
                 position: relative;
                 left: 15%;
-                padding-bottom: 30px;
+                padding-bottom: 100px;
                 width: 70%;
                 margin: 10px;
             }
@@ -76,6 +76,16 @@
             .right-btn{
                 position: absolute;
                 right: 10px;
+            }
+            .vp-post{
+                text-indent: 2em;
+            }
+            .vp-comment{
+                padding-top: 60px;
+            }
+            .about_me{
+                padding-left: 200px;
+                padding-right: 200px;
             }
         </style>
     </head>
@@ -98,7 +108,7 @@
             {% if current_user.is_authenticated %}
             <li><a href={{ url_for('.write_post') }}><span class="glyphicon glyphicon-plus"></span> 写博客</a></li>
             {% endif %}
-            <li><a href="#"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
+            <li><a href={{ url_for('.about_me') }}><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
             {% if current_user.is_authenticated %}
             <li><a href={{ url_for('.logout') }}><span class="glyphicon glyphicon-log-in"></span> 退出</a></li>
             {% else %}

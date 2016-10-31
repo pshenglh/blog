@@ -96,6 +96,24 @@ def index():
         new_posts = posts[0:9]
     return render_template('hello.html', posts=posts, new_posts=new_posts)
 
+# 关于我
+@app.route('/about_me')
+def about_me():
+    user = Admin.query.filter_by(id=1).first()
+    return render_template('about_me.html', user=user)
+
+@app.route('/edit_abtme', methods=['GET', 'POST'])
+def edit_about_me():
+    form = AbooutMeForm()
+    user = Admin.query.filter_by(id=1).first()
+    if request.method == 'POST':
+        user.about_me = form.about_me.data
+        db.session.add(user)
+        return redirect(url_for('index'))
+    form.about_me.data = user.about_me
+    return render_template('edit_about_me.html', form=form)
+
+
 @app.route('/code')
 def code():
     posts = Post.query.filter_by(tag='code').order_by(Post.timestamp.desc()).all()
@@ -146,7 +164,6 @@ def write_post():
 def edit_post(id):
     form = PostForm()
     if form.validate_on_submit():
-        print 2
         post = Post.query.filter_by(id=id).first()
         post.body = form.body.data
         post.title = form.title.data
@@ -171,6 +188,22 @@ def edit_post(id):
 def delete_post(id):
     post = Post.query.get_or_404(id)
     db.session.delete(post)
+    comments = Comment.query.filter_by(post_id=id).all()
+    if comments:
+        db.session.delete(comments)
+    if post.head_pic:
+        q = post.head_pic[1:]
+        if os.path.exists(q):
+            os.remove(q)
+    if post.body_pic:
+        p = post.body_pic.split("|")
+        for i in p:
+            l = i[1:]
+            if os.path.exists(l):
+                os.remove(l)
+        r = os.path.split(p[0])
+        if os.path.exists(r[0][1:]):
+            os.rmdir(r[0][1:])
     return redirect(url_for('index'))
 
 # 查看博客
@@ -190,16 +223,11 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-@app.route('/uploaded_file/<id>')
+@app.route('/uploaded_file/<id>', methods=['GET', 'POST'])
 @login_required
 def uploaded_file(id):
     post = Post.query.filter_by(id=id).first()
     p =post.head_pic
-    return render_template('img.html', filenam=p, id=id)
-
-@app.route('/upload_pic/<int:id>',methods=['GET','POST'])
-@login_required
-def upload_pic(id):
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
@@ -212,10 +240,10 @@ def upload_pic(id):
             if post.head_pic:
                 q = os.path.split(post.head_pic)
                 l = s[0] + '/' + q[1]
-                os.remove(l)
+                if os.path.exists(l):
+                    os.remove(l)
             post.head_pic = p
-            return redirect(url_for('uploaded_file', id=id))
-    return render_template('upload_file.html')
+    return render_template('theme_pic.html', filenam=p, id=id)
 
 @app.route('/post_pic/<int:id>',methods=['GET','POST'])
 @login_required
@@ -255,6 +283,10 @@ class PostForm(Form,CKEditor):
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 
+class AbooutMeForm(Form, CKEditor):
+    about_me = TextAreaField('关于我', validators=[Required()])
+    submit = SubmitField('提交')
+
 class LoginForm(Form):
     email = StringField('邮箱', validators=[Required(), Length(1, 64)])
     password = PasswordField('密码', validators=[Required()])
@@ -270,6 +302,8 @@ class Admin(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
+    user_pic = db.Column(db.Text)
+    about_me = db.Column(db.Text)
 
 class Post(db.Model):
     __tablename__ = 'posts'
