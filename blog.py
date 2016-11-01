@@ -263,7 +263,7 @@ def post_pic(id):
                 post.body_pic = p
             else:
                 post.body_pic = post.body_pic + '|' + p
-            return redirect(url_for('uploaded_postpic', id=id))
+            return redirect(url_for( id=id))
     return render_template('upload_file.html')
 
 @app.route('/uploaded-postpic/<id>')
@@ -275,6 +275,15 @@ def uploaded_postpic(id):
     else:
         p = None
     return render_template('body_pic.html', filenam=p, id=id)
+
+# 错误处理
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
 
 class PostForm(Form,CKEditor):
     title = StringField('标题',validators=[Required()])
