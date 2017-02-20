@@ -1,6 +1,6 @@
 #  -*- coding: utf8 -*-
 import sys
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import Form
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
@@ -14,7 +14,6 @@ from flaskckeditor import CKEditor
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
 from flask_moment import Moment
 from werkzeug import secure_filename
-
 
 # 处理中文编码的问题
 default_encoding = 'utf-8'
@@ -135,6 +134,24 @@ def database():
 @app.route('/essay')
 def essay():
     posts = Post.query.filter_by(tag='essay').order_by(Post.timestamp.desc()).all()
+    if len(posts) < 10:
+        new_posts = posts
+    else:
+        new_posts = posts[0:9]
+    return render_template('hello.html', posts=posts, new_posts=new_posts)
+
+@app.route('/tool')
+def tool():
+    posts = Post.query.filter_by(tag='tools').order_by(Post.timestamp.desc()).all()
+    if len(posts) < 10:
+        new_posts = posts
+    else:
+        new_posts = posts[0:9]
+    return render_template('hello.html', posts=posts, new_posts=new_posts)
+
+@app.route('/net')
+def net():
+    posts = Post.query.filter_by(tag='net').order_by(Post.timestamp.desc()).all()
     if len(posts) < 10:
         new_posts = posts
     else:
@@ -288,7 +305,8 @@ def internal_server_error(e):
 class PostForm(Form,CKEditor):
     title = StringField('标题',validators=[Required()])
     abstract = TextAreaField('摘要',validators=[Required()])
-    tag = SelectField('标签', choices=[('code', '编程'), ('database', '数据库'),('essay', '随笔')], validators=[Required()])
+    tag = SelectField('标签', choices=[('code', '编程'), ('database', '数据库'),('essay', '随笔'), \
+                                     ('tools', '工具'), ('net', '网络')], validators=[Required()])
     body = TextAreaField("What's on your mind?",validators=[Required()])
     submit = SubmitField('提交')
 
