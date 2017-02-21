@@ -88,12 +88,16 @@ def delete_comment(id):
 # 文章首页和分类
 @app.route('/', methods=['GET','POST'])
 def index():
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=5, error_out=False)
+    posts = pagination.items
     if len(posts) < 10:
         new_posts = posts
     else:
         new_posts = posts[0:9]
-    return render_template('hello.html', posts=posts, new_posts=new_posts)
+    return render_template('hello.html', posts=posts, new_posts=new_posts,
+                           pagination=pagination)
 
 # 关于我
 @app.route('/about_me')
