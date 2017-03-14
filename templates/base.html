@@ -1,106 +1,19 @@
 <!DOCTYPE html>
     <head>
         <title>潘胜的个人博客</title>
-         <link rel="shortcut icon" href="{{ url_for('static', filename = 'images.png') }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ url_for('static', filename = 'images.png') }}" type="image/x-icon">
         <link rel="icon" href="{{ url_for('static', filename='images.png') }}" type="image/x-icon">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/customization.css')}}">
         <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="{{ url_for('static', filename='css/bootstrap.css') }}"></script>
         <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
-
-        <style>
-            .post_head h3{
-                padding: 8px;
-                margin-bottom: 0px;
-                font-size: 21px;
-                font-weight: 600;
-            }
-            .btn{
-                border-radius: 0px
-            }
-
-            .container {
-                padding-right: 90px;
-                padding-left: 90px;
-                margin-right: auto;
-                margin-left: auto;
-            }
-
-            .tou{
-                padding-right: 0px;
-                padding-left: 0px;
-                padding-bottom: 170px;
-                margin-top: 0px;
-                background-image: url(static/test1.png);
-                background-size: 1370px 180px;
-            }
-            .tou h1{
-                position: absolute;
-                top: 10px;
-                left: 20%;
-            }
-            form.control{
-                padding-bottom: 12px;
-            }
-            .tag{
-                margin-bottom: 20px;
-                margin-top: 20px;
-            }
-            .alert{
-                padding-top: 5px;
-                padding-bottom: 5px;
-                margin-top: 20px;
-                border-radius: 0px;
-            }
-            .alert-success {
-                  color: darkslategray;
-                  background-color: lightgrey;
-                  border-color: lightgrey;
-             }
-            .right-index{
-                text-align: center;
-                padding-bottom: 20px;
-            }
-            .vp-head{
-                position: relative;
-                left: 15%;
-                padding-bottom: 100px;
-                width: 70%;
-                margin: 10px;
-            }
-            .newly-post{
-                font-weight: bolder;
-            }
-            .right-btn{
-                position: absolute;
-                right: 10px;
-            }
-            .vp-post{
-                text-indent: 2em;
-            }
-            .vp-comment{
-                padding-top: 60px;
-            }
-            .about_me{
-                padding-left: 200px;
-                padding-right: 200px;
-            }
-            .pagination{
-                position: relative;
-                left: 120px;
-            }
-        </style>
     </head>
 
-{% block head %}
-<div class="tou">
-  <h1 align="center">我的博客</h1>
-</div>
-{% endblock %}
-
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand" href="{{ url_for('.index') }}">首页</a>
