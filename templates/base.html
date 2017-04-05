@@ -1,16 +1,15 @@
 <!DOCTYPE html>
     <head>
         <title>潘胜的个人博客</title>
-        <link rel="shortcut icon" href="{{ url_for('static', filename = 'images.png') }}" type="image/x-icon">
         <link rel="icon" href="{{ url_for('static', filename='images.png') }}" type="image/x-icon">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
-        <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/customization.css')}}">
         <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-        <script src="{{ url_for('static', filename='css/bootstrap.css') }}"></script>
-        <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/customization.css')}}">
         {% block link %}{% endblock %}
     </head>
 
@@ -23,7 +22,6 @@
             <a class="navbar-brand" href="{{ url_for('.net') }}">网络</a>
             <a class="navbar-brand" href="{{ url_for('.tool') }}">工具</a>
             <a class="navbar-brand" href="{{ url_for('.essay') }}">随笔</a>
-            <a class="navbar-brand" href="{{ url_for('.blog') }}">随笔</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
             {% if current_user.is_authenticated %}
