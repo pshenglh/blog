@@ -57,6 +57,10 @@ manager.add_command('db', MigrateCommand)
 def load_user(user_id):
     return Admin.query.get(int(user_id))
 
+@app.route('/blog')
+def blog():
+    return render_template('index1.html')
+
 # 登录
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -96,7 +100,7 @@ def index():
         new_posts = posts
     else:
         new_posts = posts[0:9]
-    return render_template('hello.html', posts=posts, new_posts=new_posts,
+    return render_template('index.html', posts=posts, new_posts=new_posts,
                            pagination=pagination)
 
 # 关于我
@@ -124,7 +128,7 @@ def code():
         new_posts = posts
     else:
         new_posts = posts[0:9]
-    return render_template('hello.html', posts=posts, new_posts=new_posts)
+    return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/database')
 def database():
@@ -133,7 +137,7 @@ def database():
         new_posts = posts
     else:
         new_posts = posts[0:9]
-    return render_template('hello.html', posts=posts, new_posts=new_posts)
+    return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/essay')
 def essay():
@@ -142,7 +146,7 @@ def essay():
         new_posts = posts
     else:
         new_posts = posts[0:9]
-    return render_template('hello.html', posts=posts, new_posts=new_posts)
+    return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/tool')
 def tool():
@@ -151,7 +155,7 @@ def tool():
         new_posts = posts
     else:
         new_posts = posts[0:9]
-    return render_template('hello.html', posts=posts, new_posts=new_posts)
+    return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/net')
 def net():
@@ -160,7 +164,7 @@ def net():
         new_posts = posts
     else:
         new_posts = posts[0:9]
-    return render_template('hello.html', posts=posts, new_posts=new_posts)
+    return render_template('index.html', posts=posts, new_posts=new_posts)
 
 # 编写博客
 @app.route('/write_post', methods=['GET', 'POST'])
@@ -237,7 +241,7 @@ def post(id):
         return redirect(url_for('post', id=id))
     post = Post.query.get_or_404(id)
     comments = Comment.query.filter_by(post_id=id).order_by(Comment.timestamp.desc()).all()
-    return render_template('view_post.html', post=post, form=form, comments=comments)
+    return render_template('detail.html', post=post, form=form, comments=comments)
 
 # 文件上传
 def allowed_file(filename):

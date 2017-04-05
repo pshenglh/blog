@@ -11,6 +11,7 @@
         <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="{{ url_for('static', filename='css/bootstrap.css') }}"></script>
         <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+        {% block link %}{% endblock %}
     </head>
 
 <nav class="navbar navbar-default">
@@ -22,6 +23,7 @@
             <a class="navbar-brand" href="{{ url_for('.net') }}">网络</a>
             <a class="navbar-brand" href="{{ url_for('.tool') }}">工具</a>
             <a class="navbar-brand" href="{{ url_for('.essay') }}">随笔</a>
+            <a class="navbar-brand" href="{{ url_for('.blog') }}">随笔</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
             {% if current_user.is_authenticated %}

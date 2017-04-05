@@ -10,30 +10,27 @@
                 <hr>
                 <div class="post_head"><h3>{{ post.title | safe }}</h3></div>
                 <div class="media" margin="30px">
-                  <a class="media-left" >
+                    <a class="media-left" >
                     <img src="{{ post.head_pic }}" width="200" height="150" alt="...">
-                  </a>
-                  <div class="media-body">
+                    </a>
+                    <div class="media-body">
                     {{ post.abstract }}<br><br>
-                      <span class="right-btn">
-                          {% if current_user.is_authenticated %}
-                          <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
-                          <a class="btn btn-primary btn-large" href="{{ url_for('.delete_post', id=post.id) }}">删除</a>
-                          <a class="btn btn-primary" href="{{ url_for('.post_pic', id=post.id) }}" >上传图片</a>
-                          <a class="btn btn-primary" href="{{ url_for('.uploaded_file', id=post.id) }}" >主题图片</a>
-                          {% endif %}
-                          <a class="btn btn-primary" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
-                      </span>
-                  </div>
+                        <span class="right-btn">
+                            {% if current_user.is_authenticated %}
+                            <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}" >编辑</a>
+                            <a class="btn btn-primary btn-large" href="{{ url_for('.delete_post', id=post.id) }}">删除</a>
+                            <a class="btn btn-primary" href="{{ url_for('.post_pic', id=post.id) }}" >上传图片</a>
+                            <a class="btn btn-primary" href="{{ url_for('.uploaded_file', id=post.id) }}" >主题图片</a>
+                            {% endif %}
+                            <a class="btn btn-primary" href="{{ url_for('.post', id=post.id) }}" >查看更多</a>
+                         </span>
+                    </div>
                 </div>
                 <div class="alert alert-success" role="alert">发布时间：{{ post.timestamp.strftime("%Y-%m-%d") }} &nbsp
-                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp分类：{{ post.tag}}</div>
-
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp分类：{{ post.tag}}
+                </div>
                 {% endfor %}
                 <hr>
-                <div>
-
-                </div>
                 {% if pagination %}
                 <div class="pagination">
                     {{ macros.pagination_widget(pagination, '.index') }}
