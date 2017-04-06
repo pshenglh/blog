@@ -85,6 +85,14 @@ def delete_comment(id):
     db.session.delete(comment)
     return redirect(url_for('post', id=post_id))
 
+def find_new_post():
+    page = request.args.get('page', 1, type=int)
+    new_post = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=20, error_out=False
+    )
+    new_posts = new_post.items
+    return new_posts
+
 # 文章首页和分类
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -92,10 +100,7 @@ def index():
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
         page, per_page=5, error_out=False)
     posts = pagination.items
-    if len(posts) < 10:
-        new_posts = posts
-    else:
-        new_posts = posts[0:9]
+    new_posts = find_new_post()
     return render_template('index.html', posts=posts, new_posts=new_posts,
                            pagination=pagination)
 
@@ -120,46 +125,31 @@ def edit_about_me():
 @app.route('/code')
 def code():
     posts = Post.query.filter_by(tag='code').order_by(Post.timestamp.desc()).all()
-    if len(posts) < 10:
-        new_posts = posts
-    else:
-        new_posts = posts[0:9]
+    new_posts = find_new_post()
     return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/database')
 def database():
     posts = Post.query.filter_by(tag='database').order_by(Post.timestamp.desc()).all()
-    if len(posts) < 10:
-        new_posts = posts
-    else:
-        new_posts = posts[0:9]
+    new_posts = find_new_post()
     return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/essay')
 def essay():
     posts = Post.query.filter_by(tag='essay').order_by(Post.timestamp.desc()).all()
-    if len(posts) < 10:
-        new_posts = posts
-    else:
-        new_posts = posts[0:9]
+    new_posts = find_new_post()
     return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/tool')
 def tool():
     posts = Post.query.filter_by(tag='tools').order_by(Post.timestamp.desc()).all()
-    if len(posts) < 10:
-        new_posts = posts
-    else:
-        new_posts = posts[0:9]
+    new_posts = find_new_post()
     return render_template('index.html', posts=posts, new_posts=new_posts)
 
 @app.route('/net')
 def net():
     posts = Post.query.filter_by(tag='net').order_by(Post.timestamp.desc()).all()
-    if len(posts) < 10:
-        new_posts = posts
-    else:
-        new_posts = posts[0:9]
+    new_posts = find_new_post()
     return render_template('index.html', posts=posts, new_posts=new_posts)
 
 # 编写博客
