@@ -2,21 +2,22 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-from config import config
 from flask_login import LoginManager
+import config
+
+
+bootstrap = Bootstrap()
+moment = Moment()
+db = SQLAlchemy()
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
-login_manager.login_view = 'login'
+login_manager.login_view = 'auth.login'
 
-db = SQLAlchemy()
-bootstrap = Bootstrap()
-moment = Moment()
 
-def create_app(config_name):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config_name)
-    config[config_name].init_app(app)
+    app.config.from_object(config)
 
     bootstrap.init_app(app)
     moment.init_app(app)

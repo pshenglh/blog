@@ -30,7 +30,7 @@
                 {% endif %}
                 <li><a href="{{ url_for('.about_me') }}"><span class="glyphicon glyphicon-user"></span> 关于我</a></li>
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('.logout') }}"><span class="glyphicon glyphicon-log-in"></span> 退出</a></li>
+                <li><a href="{{ url_for('.logout') }}"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
                 {% else %}
                 <li><a href="{{ url_for('.login') }}"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
                 {% endif %}
@@ -41,7 +41,7 @@
     {% block body %}{% endblock %}
     <div class="foot">
         <hr>
-        <p>Blog builted by Flask</p>
+        <p>Blog built by Flask</p>
     </div>
 </body>
 </html>
