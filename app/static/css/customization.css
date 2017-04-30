@@ -67,14 +67,29 @@ form.control{
     text-align: center;
     padding-bottom: 20px;
 }
-
-.right-btn{
-  float: right;
+.vp-head{
+    position: relative;
+    left: 15%;
+    width: 70%;
+    margin: 10px;
 }
 
-.post {
-    max-width: 700px;
-    margin-left: 150px;
+.right-btn{
+    float: right;
+}
+.vp-post{
+    position: relative;
+    left: 15%;
+    width: 70%;
+    line-height: 20px;
+    font-size: 14px;
+}
+
+.vp-comment{
+    position: relative;
+    left: 15%;
+    width: 70%;
+    padding-top: 60px;
 }
 .about_me{
     padding-left: 200px;
@@ -103,24 +118,4 @@ form.control{
 
 .newly-post p {
    margin-bottom: 0px;
-}
-
-.login-form {
-  margin-top: 120px;
-  margin-left: 300px;
-  margin-bottom: 160px;
-  max-width: 330px
-}
-.login-form .form-control {
-  position: relative;
-  height: auto;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
-  padding: 10px;
-  font-size: 16px;
-}
-
-.login-form .btn{
-  margin-top: 20px;
 }
