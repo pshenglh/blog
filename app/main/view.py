@@ -8,6 +8,7 @@ from ..models import Admin, Post, Comment
 from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm
 from .. import db, login_manager
 from . import main
+from wtforms.compat import iteritems
 
 # 处理中文编码的问题
 default_encoding = 'utf-8'
@@ -24,7 +25,12 @@ def load_user(user_id):
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm ()
-    if form.validate_on_submit():
+    #for name, fields in iteritems(form._fields):
+     #   print name, fields.validate(form)
+    #print form.validate()
+    #print form.username.validate(form), form.password.validate(form), form.submit.validate(form)
+    #print form.csrf_token.validate(form), form.validate()
+    if request.method == 'POST':
         user = Admin.query.filter_by(id=1).first()
         if user.username == form.username.data and \
                 user.password_hash == form.password.data:
@@ -120,10 +126,9 @@ def net():
 @login_required
 def write_post():
     form = PostForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         post = Post(body=form.body.data, title=form.title.data, abstract=form.abstract.data,
                     tag=form.tag.data)
-        print post.timestamp
         db.session.add(post)
         return redirect(url_for('main.index'))
     form.title.data = ' '
@@ -137,7 +142,7 @@ def write_post():
 @login_required
 def edit_post(id):
     form = PostForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         post = Post.query.filter_by(id=id).first()
         post.body = form.body.data
         post.title = form.title.data
@@ -184,7 +189,7 @@ def delete_post(id):
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     form = CommentForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         comment = Comment(body=form.comment.data, connection=form.connect.data, post_id=id)
         db.session.add(comment)
         return redirect(url_for('main.post', id=id))
