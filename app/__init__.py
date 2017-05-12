@@ -3,7 +3,7 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-import config
+from config import config
 
 
 bootstrap = Bootstrap()
@@ -15,9 +15,9 @@ login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 
 
-def create_app():
+def create_app(config_name='develop'):
     app = Flask(__name__)
-    app.config.from_object(config)
+    app.config.from_object(config[config_name])
 
     bootstrap.init_app(app)
     moment.init_app(app)
