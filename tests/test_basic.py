@@ -54,7 +54,6 @@ class BasicsTestCase(unittest.TestCase):
                       password_hash='test1')
         db.session.add(admin)
         db.session.commit()
-        user = Admin.query.filter_by(id=1).first()
         self.client.post(url_for('main.login'), data=dict(
             username='test',
             password='test1'
@@ -118,11 +117,37 @@ class BasicsTestCase(unittest.TestCase):
         self.assertTrue(p.title in response.data)
         self.assertTrue(comments.body in response.data)
 
+        #删除评论
+        self.client.post(url_for('main.delete_comment', id=comments.id))
+        comment_del = Comment.query.filter_by(id=comments.id).first()
+        self.assertIsNone(comment_del)
+
         #删除博客
         self.client.post(url_for('main.delete_post', id=p.id))
         p2 = Post.query.filter_by(id=p.id).first()
         self.assertIsNone(p2)
 
+    def test_about_me(self):
+        admin = Admin(username='test',
+                      password_hash='test1',
+                      about_me='about_me_test')
+        db.session.add(admin)
+        db.session.commit()
+        self.client.post(url_for('main.login'), data=dict(
+            username='test',
+            password='test1'
+        ), follow_redirects=True)
+
+        response = self.client.get(url_for('main.about_me'), follow_redirects=True)
+        self.assertTrue('about_me_test' in response.data)
+
+        response = self.client.get(url_for('main.edit_about_me'), follow_redirects=True)
+        self.assertTrue('about_me_test' in response.data)
+
+        response = self.client.post(url_for('main.edit_about_me'), data=dict(
+            about_me='m_about_me_test'
+        ), follow_redirects=True)
+        self.assertTrue('m_about_me_test' in response.data)
 
 
 

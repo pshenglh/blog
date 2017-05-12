@@ -1,6 +1,6 @@
-#  -*- coding: utf8 -*-
+#  -*- coding: utf-8 -*-
 import sys
-from flask import render_template, redirect, url_for, request, current_app
+from flask import render_template, redirect, url_for, request, current_app, make_response
 import os
 from flask_login import login_user, login_required, logout_user
 from werkzeug import secure_filename
@@ -9,13 +9,6 @@ from .Forms import PostForm, AbooutMeForm, CommentForm, LoginForm
 from .. import db, login_manager
 from . import main
 from wtforms.compat import iteritems
-
-# 处理中文编码的问题
-default_encoding = 'utf-8'
-if sys.getdefaultencoding() != default_encoding:
-    reload(sys)
-
-    sys.setdefaultencoding(default_encoding)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -80,13 +73,14 @@ def about_me():
     return render_template('about_me.html', user=user)
 
 @main.route('/edit_abtme', methods=['GET', 'POST'])
+@login_required
 def edit_about_me():
     form = AbooutMeForm()
     user = Admin.query.filter_by(id=1).first()
     if request.method == 'POST':
         user.about_me = form.about_me.data
         db.session.add(user)
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.about_me'))
     form.about_me.data = user.about_me
     return render_template('edit_about_me.html', form=form)
 
@@ -121,6 +115,32 @@ def net():
     new_posts = find_new_post()
     return render_template('index.html', posts=posts, new_posts=new_posts)
 
+def tag_get(form):
+    for value, label in form.tag.choices:
+        if value == form.tag.data:
+            u_label = unicode(label, 'utf-8')
+            t = (value, u_label)
+            tag = '-'.join(t)
+            return tag
+
+@main.app_template_filter('tag_get')
+def tag(s):
+    list = str(s).split('-')
+    return list[1]
+
+
+@main.route('/mod')
+def form_tag_modify():
+    posts = Post.query.all()
+    for p in posts:
+        form = PostForm()
+        form.tag.data = p.tag
+        tag = tag_get(form)
+        print tag
+        p.tag = tag
+        db.session.add(p)
+    return make_response('success')
+
 # 编写博客
 @main.route('/write_post', methods=['GET', 'POST'])
 @login_required
@@ -128,7 +148,8 @@ def write_post():
     form = PostForm()
     if request.method == 'POST':
         post = Post(body=form.body.data, title=form.title.data, abstract=form.abstract.data,
-                    tag=form.tag.data)
+                    tag=tag_get(form))
+        print tag_get(form)
         db.session.add(post)
         return redirect(url_for('main.index'))
     form.title.data = ' '
@@ -147,12 +168,12 @@ def edit_post(id):
         post.body = form.body.data
         post.title = form.title.data
         post.abstract = form.abstract.data
-        post.tag = form.tag.data
+        post.tag = tag_get(form)
         db.session.add(post)
         return redirect(url_for('main.index'))
     post = Post.query.filter_by(id=id).first()
     form.title.data = post.title
-    form.tag.data = post.tag
+    form.tag.data = str(post.tag).split('-')[0]
     form.body.data = post.body
     form.abstract.data = post.abstract
     if post.body_pic:
