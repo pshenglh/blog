@@ -74,14 +74,14 @@ class BasicsTestCase(unittest.TestCase):
         self.assertTrue(response.status_code==200)
         p = Post.query.filter_by(title=title_test).first()
         self.assertTrue(p.abstract==abstract_test)
-        self.assertTrue(p.tag==tag_test)
+        self.assertTrue(p.tag==u'code-编程')
         self.assertTrue(p.body==body_test)
 
         #修改博客
         response = self.client.get(url_for('main.edit_post', id=p.id), follow_redirects=True)
         self.assertTrue(title_test in response.data)
         self.assertTrue(abstract_test in response.data)
-        self.assertTrue(tag_test in response.data)
+        self.assertTrue('编程' in response.data)
         self.assertTrue(body_test in response.data)
 
         m_title_test = 'm_title_test'
@@ -98,7 +98,7 @@ class BasicsTestCase(unittest.TestCase):
         p1 = Post.query.filter_by(id=p.id).first()
         self.assertTrue(p1.title==m_title_test)
         self.assertTrue(p1.abstract==m_abstract_test)
-        self.assertTrue(p1.tag==m_tag_test)
+        self.assertTrue(p1.tag==u'net-网络')
         self.assertTrue(p1.body==m_body_test)
 
         # 查看博客

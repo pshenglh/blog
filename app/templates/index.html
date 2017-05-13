@@ -5,7 +5,7 @@
     <div class="container" id="sumery-container">
         <div class="row">
 		    <div class="col-md-8">
-                <h3>文章</h3>
+                <h3>{{ classify }}</h3>
                 {% for post in posts %}
                 <hr>
                 <div class="post_head"><h3>{{ post.title | safe }}</h3></div>
