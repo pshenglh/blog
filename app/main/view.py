@@ -63,8 +63,9 @@ def index():
         page, per_page=5, error_out=False)
     posts = pagination.items
     new_posts = find_new_post()
+    classify = u'所有文章'
     return render_template('index.html', posts=posts, new_posts=new_posts,
-                           pagination=pagination)
+                           pagination=pagination, classify=classify)
 
 # 关于我
 @main.route('/about_me')
@@ -87,33 +88,38 @@ def edit_about_me():
 
 @main.route('/code')
 def code():
-    posts = Post.query.filter_by(tag='code').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'code-编程').order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
-    return render_template('index.html', posts=posts, new_posts=new_posts)
+    classify = u'编程'
+    return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/database')
 def database():
-    posts = Post.query.filter_by(tag='database').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'database-数据库').order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
-    return render_template('index.html', posts=posts, new_posts=new_posts)
+    classify = u'数据库'
+    return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/essay')
 def essay():
-    posts = Post.query.filter_by(tag='essay').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'essay-随笔').order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
-    return render_template('index.html', posts=posts, new_posts=new_posts)
+    classify = u'随笔'
+    return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/tool')
 def tool():
-    posts = Post.query.filter_by(tag='tools').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'tools-工具').order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
-    return render_template('index.html', posts=posts, new_posts=new_posts)
+    classify = u'工具'
+    return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/net')
 def net():
-    posts = Post.query.filter_by(tag='net').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'net-网络').order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
-    return render_template('index.html', posts=posts, new_posts=new_posts)
+    classify = u'网络'
+    return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 def tag_get(form):
     for value, label in form.tag.choices:
@@ -149,7 +155,6 @@ def write_post():
     if request.method == 'POST':
         post = Post(body=form.body.data, title=form.title.data, abstract=form.abstract.data,
                     tag=tag_get(form))
-        print tag_get(form)
         db.session.add(post)
         return redirect(url_for('main.index'))
     form.title.data = ' '
@@ -192,18 +197,21 @@ def delete_post(id):
     if comments:
         db.session.delete(comments)
     if post.head_pic:
-        q = post.head_pic[1:]
+        q = os.path.join(current_app.config['BASE_DIR'],
+                         current_app.config['UPLOAD_FOLDER'], os.path.basename(post.head_pic))
         if os.path.exists(q):
             os.remove(q)
     if post.body_pic:
         p = post.body_pic.split("|")
         for i in p:
-            l = i[1:]
+            l = os.path.join(current_app.config['BASE_DIR'], current_app.config['UPLOAD_FOLDER'],
+                                         '0'+str(post.id), os.path.basename(i))
             if os.path.exists(l):
                 os.remove(l)
-        r = os.path.split(p[0])
-        if os.path.exists(r[0][1:]):
-            os.rmdir(r[0][1:])
+        r = os.path.join(current_app.config['BASE_DIR'], current_app.config['UPLOAD_FOLDER'],
+                                         '0'+str(post.id))
+        if os.path.exists(r):
+            os.rmdir(r)
     return redirect(url_for('main.index'))
 
 # 查看博客
@@ -238,7 +246,8 @@ def uploaded_file(id):
             p = os.path.join(current_app.config['PIC_FOLDER'], filename)
             post = Post.query.filter_by(id=id).first()
             if post.head_pic:
-                q = post.head_pic
+                q = os.path.join(current_app.config['BASE_DIR'],
+                                current_app.config['UPLOAD_FOLDER'], os.path.basename(post.head_pic))
                 if os.path.exists(q):
                     os.remove(q)
             post.head_pic = p
@@ -261,19 +270,9 @@ def post_pic(id):
             if not post.body_pic:
                 post.body_pic = pic_path
             else:
-                post.body_pic = post.body_pic + '|' + p
+                post.body_pic = post.body_pic + '|' + pic_path
             return redirect(url_for('main.edit_post', id=id))
     return render_template('upload_file.html')
-
-@main.route('/uploaded-postpic/<id>')
-@login_required
-def uploaded_postpic(id):
-    post = Post.query.filter_by(id=id).first()
-    if post.body_pic:
-        p = post.body_pic.split("|")
-    else:
-        p = None
-    return render_template('body_pic.html', filenam=p, id=id)
 
 # 错误处理
 @main.errorhandler(404)
