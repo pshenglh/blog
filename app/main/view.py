@@ -26,7 +26,7 @@ def login():
     if request.method == 'POST':
         user = Admin.query.filter_by(id=1).first()
         if user.username == form.username.data and \
-                user.password_hash == form.password.data:
+                user.verify_password(form.password.data):
             login_user(user, False)
         return redirect(url_for('main.index'))
     return render_template('login.html', form=form)
@@ -133,19 +133,6 @@ def tag_get(form):
 def tag(s):
     list = str(s).split('-')
     return list[1]
-
-
-@main.route('/mod')
-def form_tag_modify():
-    posts = Post.query.all()
-    for p in posts:
-        form = PostForm()
-        form.tag.data = p.tag
-        tag = tag_get(form)
-        print tag
-        p.tag = tag
-        db.session.add(p)
-    return make_response('success')
 
 # 编写博客
 @main.route('/write_post', methods=['GET', 'POST'])
