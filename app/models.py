@@ -34,7 +34,7 @@ class Post(db.Model):
     tag = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     comments = db.relationship('Comment', backref='role')
-    is_active = db.Column(db.Boolean)
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -46,4 +46,4 @@ class Comment(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-    is_active = db.Column(db.Boolean)
+    is_active = db.Column(db.Boolean, default=True)
