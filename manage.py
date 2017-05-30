@@ -8,7 +8,7 @@ import os
 app = create_app()
 manager = Manager(app)
 migrate = Migrate(app, db)
-debug = True
+debug = False
 
 COV = None
 if os.environ.get('FLASK_COVERAGE'):

@@ -26,7 +26,7 @@ def login():
     if request.method == 'POST':
         user = Admin.query.filter_by(id=1).first()
         if user.username == form.username.data and \
-                user.password_hash == form.password.data:
+                user.verify_password(form.password.data):
             login_user(user, False)
         return redirect(url_for('main.index'))
     return render_template('login.html', form=form)
@@ -49,7 +49,7 @@ def delete_comment(id):
 
 def find_new_post():
     page = request.args.get('page', 1, type=int)
-    new_post = Post.query.order_by(Post.timestamp.desc()).paginate(
+    new_post = Post.query.filter_by(is_active=True).order_by(Post.timestamp.desc()).paginate(
         page, per_page=20, error_out=False
     )
     new_posts = new_post.items
@@ -59,7 +59,7 @@ def find_new_post():
 @main.route('/', methods=['GET','POST'])
 def index():
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+    pagination = Post.query.filter_by(is_active=True).order_by(Post.timestamp.desc()).paginate(
         page, per_page=5, error_out=False)
     posts = pagination.items
     new_posts = find_new_post()
@@ -88,35 +88,35 @@ def edit_about_me():
 
 @main.route('/code')
 def code():
-    posts = Post.query.filter_by(tag=u'code-编程').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'code-编程', is_active=True).order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'编程'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/database')
 def database():
-    posts = Post.query.filter_by(tag=u'database-数据库').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'database-数据库', is_active=True).order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'数据库'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/essay')
 def essay():
-    posts = Post.query.filter_by(tag=u'essay-随笔').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'essay-随笔', is_active=True).order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'随笔'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/tool')
 def tool():
-    posts = Post.query.filter_by(tag=u'tools-工具').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'tools-工具', is_active=True).order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'工具'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
 
 @main.route('/net')
 def net():
-    posts = Post.query.filter_by(tag=u'net-网络').order_by(Post.timestamp.desc()).all()
+    posts = Post.query.filter_by(tag=u'net-网络', is_active=True).order_by(Post.timestamp.desc()).all()
     new_posts = find_new_post()
     classify = u'网络'
     return render_template('index.html', posts=posts, new_posts=new_posts, classify=classify)
@@ -133,19 +133,6 @@ def tag_get(form):
 def tag(s):
     list = str(s).split('-')
     return list[1]
-
-
-@main.route('/mod')
-def form_tag_modify():
-    posts = Post.query.all()
-    for p in posts:
-        form = PostForm()
-        form.tag.data = p.tag
-        tag = tag_get(form)
-        print tag
-        p.tag = tag
-        db.session.add(p)
-    return make_response('success')
 
 # 编写博客
 @main.route('/write_post', methods=['GET', 'POST'])
@@ -175,7 +162,7 @@ def edit_post(id):
         post.abstract = form.abstract.data
         post.tag = tag_get(form)
         db.session.add(post)
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.post', id=post.id))
     post = Post.query.filter_by(id=id).first()
     form.title.data = post.title
     form.tag.data = str(post.tag).split('-')[0]
@@ -187,10 +174,31 @@ def edit_post(id):
         p = None
     return render_template('post.html', form=form, id=id, filenam=p)
 
-# 删除博客
+#修改is_active属性
+@main.route('/is_active', methods=['GET', 'POST'])
+def mod():
+    posts = Post.query.all()
+    for p in posts:
+        p.is_active = True
+        db.session.add(p)
+        db.session.commit()
+    return make_response('success!')
+
+
+#一般情况删除博客
 @main.route('/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_post(id):
+    post = Post.query.get_or_404(id)
+    post.is_active= False
+    db.session.add(post)
+    db.session.commit()
+    return redirect(url_for('main.index'))
+
+# 测底删除博客
+@main.route('/delete_fully/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_post_fully(id):
     post = Post.query.get_or_404(id)
     db.session.delete(post)
     comments = Comment.query.filter_by(post_id=id).all()

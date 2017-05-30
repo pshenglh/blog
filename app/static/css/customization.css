@@ -8,9 +8,6 @@ body {
     font-size: 21px;
     font-weight: 600;
 }
-.btn{
-    border-radius: 0px
-}
 
 .container {
     padding-right: 90px;
@@ -124,3 +121,9 @@ form.control{
 .login-form .btn{
   margin-top: 20px;
 }
+
+#myModal div a {
+  margin-right: 10px;
+}
+
+#myModal div
