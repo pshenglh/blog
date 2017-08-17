@@ -38,6 +38,13 @@ body {
     margin: 0 20px 0 0;
 }
 
+.article .article-foot {
+    position: relative;
+    color: #5e5e5e;
+    padding-bottom: 0px;
+
+}
+
 .box {
     position: relative;
     background-color: white;
@@ -104,29 +111,6 @@ form.control{
     border-radius: 0px;
 }
 
-.dropdown {
-  float: right;
-  z-index: 5;
-}
-
-.media-foot .panel {
-  margin-top: 10px;
-}
-
-.media-foot .panel-body {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.media-foot .panel-body p {
-  position: relative;
-  top: 7px;
-  float: left;
-}
-
-.media-foot .btn {
-    float: right;
-}
 
 .alert-success {
     color: darkslategray;

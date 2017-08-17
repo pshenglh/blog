@@ -12,9 +12,15 @@
               <a href="{{ url_for('.post', id=post.id) }}">{{ post.title }}</a>
             </div>
             <p>{{ post.abstract }}</p>
+            <div class="article-foot">
+              <span>{{ post.timestamp.strftime("%Y-%m-%d") }}</span>
+            </div>
             <div style="clear: both"></div>
           </div>
         {% endfor %}
+        <div class="btn" id="more">
+          more
+        </div>
         {% if pagination %}
           <div class="pagination">
             {{ macros.pagination_widget(pagination, '.index') }}
