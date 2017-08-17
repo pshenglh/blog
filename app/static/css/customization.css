@@ -1,13 +1,86 @@
 body {
   padding-top: 70px;
+  background-color: #f3f3f3;
 }
 
 .post_head h3{
-    adding: 8px;
+    padding: 8px;
     margin-bottom: 0px;
     font-size: 21px;
     font-weight: 600;
 }
+
+.article {
+    position: relative;
+    background-color: white;
+    display: block;
+    margin: 0 0 10px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+}
+
+.article .article-title {
+    font-weight: bold;
+    color: black;
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+.article a {
+    color: black;
+}
+
+.article img {
+    position: relative;
+    float: left;
+    height: 150px;
+    width: 200px;
+    margin: 0 20px 0 0;
+}
+
+.box {
+    position: relative;
+    background-color: white;
+    display: block;
+    margin: 0 0 10px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 0 0 2px 2px;
+}
+
+.box-title {
+    position: relative;
+    background-color: white;
+    display: block;
+    padding: 10px;
+    border: 1px #ddd;
+    border-style: solid solid none solid;
+    border-radius: 2px 2px 0 0;
+    height: 40px;
+    font-weight: bold;
+}
+
+
+.about {
+    position: relative;
+    background-color: white;
+    display: block;
+    margin: 0 0 10px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    text-align: center;
+}
+
+.about img {
+    width: 80px;
+    height: 80px;
+    display: inline;
+    text-align: center;
+    margin: 0 0 10px 0;
+}
+
+
 
 .container {
     padding-right: 90px;
@@ -70,9 +143,20 @@ form.control{
 }
 
 .post {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    max-width: 700px;
+    text-indent: 2em;
+    margin: 0 0 20px 150px;
+}
+
+.comment {
     max-width: 700px;
     margin-left: 150px;
+    font-size: 20px;
 }
+
 .about_me{
     padding-left: 200px;
     padding-right: 200px;
@@ -83,8 +167,11 @@ form.control{
 }
 
 .foot {
+    position: relative;
+    background-color: white;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 0;
+    padding-bottom: 30px;
     font-size: 17px;
     font-family: Times;
 }
