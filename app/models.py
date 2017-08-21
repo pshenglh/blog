@@ -36,8 +36,6 @@ class Post(db.Model):
     comments = db.relationship('Comment', backref='role')
     is_active = db.Column(db.Boolean, default=True)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
 
 class Comment(db.Model):
     __tablename__ = 'comments'

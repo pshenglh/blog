@@ -67,6 +67,16 @@ def index():
     return render_template('index.html', posts=posts, new_posts=new_posts,
                            pagination=pagination, classify=classify)
 
+@main.route('/more')
+def more():
+    page = request.args.get('page', type=int)
+    pagination = Post.query.filter_by(is_active=True).order_by(Post.timestamp.desc()).paginate(
+        page, per_page=5, error_out=False
+    )
+    posts = pagination.items
+    pages = pagination.pages
+    return render_template('more.html', posts=posts, pages=pages)
+
 # 关于我
 @main.route('/about_me')
 def about_me():

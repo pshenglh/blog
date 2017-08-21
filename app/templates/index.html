@@ -18,14 +18,9 @@
             <div style="clear: both"></div>
           </div>
         {% endfor %}
-        <div class="btn" id="more">
-          more
+        <div class="long-btn" id="more" value=2>
+          查看更多
         </div>
-        {% if pagination %}
-          <div class="pagination">
-            {{ macros.pagination_widget(pagination, '.index') }}
-          </div>
-        {% endif %}
       </div>
       <div class="col-md-4">
         <div class="about">

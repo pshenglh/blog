@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from config import config
 
 
+
 bootstrap = Bootstrap()
 moment = Moment()
 db = SQLAlchemy()

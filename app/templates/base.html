@@ -11,6 +11,9 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/customization.css')}}">
         <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
         <script src="{{ url_for('static', filename='more.js') }}"></script>
+        <script type="text/javascript">
+          var $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+        </script>
         {% block link %}{% endblock %}
     </head>
 
