@@ -41,8 +41,11 @@ body {
 .article .article-foot {
     position: relative;
     color: #5e5e5e;
-    padding-bottom: 0px;
+    padding-bottom: 0;
+}
 
+.article-foot span {
+    margin-right: 10px;
 }
 
 .box {
