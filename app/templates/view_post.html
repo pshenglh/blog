@@ -9,10 +9,8 @@
       <!-- 文章内容 -->
       <p>{{ post.body | safe }}</p>
       {% if current_user.is_authenticated %}
-        <div class="right-btn">
-          <a class="btn btn-primary" data-toggle="modal" data-target="#myModal">删除</a>
-          <a class="btn btn-primary" href="{{ url_for('.edit_post', id=post.id) }}">编辑</a>
-        </div>
+        <a class="btn btn-default" data-toggle="modal" data-target="#myModal">删除</a>
+        <a class="btn btn-default" href="{{ url_for('.edit_post', id=post.id) }}">编辑</a>
       {% endif %}
     </div>
       <!-- 评论部分 -->
@@ -22,12 +20,9 @@
     <div class="box comment">
       {% for comment in comments %}
         <p>{{ comment.body | safe }}</p>
-        <br>
         {% if current_user.is_authenticated %}
           <p>联系方式：{{ comment.connection }}</p>
-          <div class="right-btn">
-            <p><a class="btn btn-primary btn-large" href="{{ url_for('.delete_comment', id=comment.id) }}">删除</a></p>
-          </div>
+            <a class="btn btn-default" href="{{ url_for('.delete_comment', id=comment.id) }}">删除</a>
         {% endif %}
         <hr>
       {% endfor %}

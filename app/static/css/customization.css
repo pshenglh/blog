@@ -134,8 +134,15 @@ form.control{
     padding-bottom: 20px;
 }
 
-.right-btn{
-  float: right;
+.button {
+    margin: 0 0 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .post {
@@ -147,10 +154,14 @@ form.control{
     margin: 0 0 20px 150px;
 }
 
+.post a {
+    text-indent: 0;
+}
+
 .comment {
     max-width: 700px;
     margin-left: 150px;
-    font-size: 20px;
+    font-size: 14px;
 }
 
 .about_me{
